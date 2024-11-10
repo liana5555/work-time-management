@@ -22,6 +22,8 @@ After running the last command the terminal will show you where you can reach it
 
 It will be on http://localhost:5173/
 
+You can try the app at https://work-time-management.vercel.app/
+
 # Időnyilvántartó rendszer
 
 Ez egy webes applikáció, ahol a "felhasználók"
@@ -39,3 +41,5 @@ A github repo klónozása után a work-time-management mappa elérési útvonal�
 
 A terminál jelezni fogja hogy milyen elérési útvonalon lehet elérni.
 A böngészőbe kell írni: http://localhost:5173/
+
+Kipróbálható https://work-time-management.vercel.app/
