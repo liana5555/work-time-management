@@ -9,6 +9,17 @@ const datas = ref([])
 const lastId = ref(0)
 
 const isAddingOrEditing = ref(false)
+const isEditing = ref(false)
+
+const currentCard = ref({
+  id: 0,
+  title: '',
+  desc: '',
+  date: '',
+  starting: '',
+  ending: '',
+  categories: '',
+})
 
 onMounted(() => {
   let localContent
@@ -41,6 +52,16 @@ function addItem(cardValues) {
   ]
 }
 
+function editCard(card) {
+  datas.value = datas.value.map((item) => {
+    if (item.id === card.id) {
+      return card
+    } else {
+      return item
+    }
+  })
+}
+
 function removeItem(currentItem) {
   datas.value = datas.value.filter((item) => item !== currentItem)
 }
@@ -54,6 +75,20 @@ function setLocalStorage() {
 }
 
 watch(datas, setLocalStorage)
+
+watch(isEditing, (newValue) => {
+  if (!newValue) {
+    currentCard.value = {
+      id: 0,
+      title: '',
+      desc: '',
+      date: '',
+      starting: '',
+      ending: '',
+      categories: '',
+    }
+  }
+})
 </script>
 
 <template>
@@ -63,7 +98,19 @@ watch(datas, setLocalStorage)
     </header>
 
     <main class="flex p-8 lg:grid lg:grid-cols-2 lg:grid-rows-2 flex-col gap-8">
-      <WorkCards v-for="data in datas" :card="data" :key="data.id" :removeItem="removeItem" />
+      <WorkCards
+        v-for="data in datas"
+        :card="data"
+        :key="data.id"
+        :removeItem="removeItem"
+        :enableEditing="
+          () => {
+            isEditing = true
+            isAddingOrEditing = true
+            currentCard.value = data
+          }
+        "
+      />
     </main>
 
     <div class="sticky bottom-10 flex flex-col justify-center items-center">
@@ -79,10 +126,14 @@ watch(datas, setLocalStorage)
       ><AddEditCard
         :cancelDialog="
           () => {
+            isEditing = false
             isAddingOrEditing = false
           }
         "
         :addItem="addItem"
+        :card="currentCard"
+        :editCard="editCard"
+        :isEditing="isEditing"
       />
     </PopUpWraepper>
   </div>

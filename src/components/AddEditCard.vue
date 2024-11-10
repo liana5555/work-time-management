@@ -1,7 +1,9 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { swalNotif } from '@/utilities/swalHelper'
+import { DateTime } from 'luxon'
+import { ref } from 'vue'
 
-const props = defineProps(['cancelDialog', 'addItem'])
+const props = defineProps(['cancelDialog', 'addItem', 'editCard', 'isEditing', 'card'])
 
 const newData = ref({
   id: 0,
@@ -12,6 +14,8 @@ const newData = ref({
   ending: '',
   categories: '',
 })
+
+newData.value = props.card?.value || newData.value
 </script>
 
 <template>
@@ -50,12 +54,23 @@ const newData = ref({
         class="border-bg-olive border-4 p-4 rounded-xl bg-accept-bg w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-accept-bg/75 transition-all ease-in-out duration-300"
         @click="
           () => {
-            addItem(newData)
+            try {
+              if (isEditing) {
+                editCard(newData)
+                swalNotif('success', 'You successfully edited the current item')
+              } else {
+                newData.date = DateTime.now().toFormat('yyyy.MM.dd HH:mm')
+                addItem(newData)
+                swalNotif('success', 'You successfully added a new item')
+              }
+            } catch (err) {
+              swalNotif('error', 'Oops, something went wrong.')
+            }
             cancelDialog()
           }
         "
       >
-        Add item
+        {{ isEditing ? 'Edit item' : 'Add item' }}
       </button>
       <button
         class="border-bg-olive border-4 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-darker-blue/75 transition-all ease-in-out duration-300"
