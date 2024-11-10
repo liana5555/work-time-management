@@ -4,12 +4,22 @@ import WorkCards from './components/WorkCards.vue'
 import PopUpWraepper from './components/PopUpWraepper.vue'
 import { PlusCircleIcon } from '@heroicons/vue/24/solid'
 import AddEditCard from './components/AddEditCard.vue'
+import FilteringOptions from './components/FilteringOptions.vue'
+import { DateTime } from 'luxon'
 
 const datas = ref([])
 const lastId = ref(0)
 
 const isAddingOrEditing = ref(false)
 const isEditing = ref(false)
+
+const filteredData = ref([])
+const isFiltered = ref(false)
+const filterBy = ref({
+  filterByTimePeriod: '',
+  filterByProperty: '',
+})
+const valueForFiltering = ref('')
 
 const currentCard = ref({
   id: 0,
@@ -74,6 +84,13 @@ function setLocalStorage() {
   }
 }
 
+function setFilteringOptions(filteringValue, filteringBy) {
+  console.log(filteringValue, filteringBy)
+  valueForFiltering.value = filteringValue
+
+  filterBy.value = filteringBy
+}
+
 watch(datas, setLocalStorage)
 
 watch(isEditing, (newValue) => {
@@ -89,6 +106,50 @@ watch(isEditing, (newValue) => {
     }
   }
 })
+
+watch(valueForFiltering, (newValueForFiltering) => {
+  if (newValueForFiltering && isFiltered) {
+    filteredData.value = datas.value.filter(cbForFiltering)
+  }
+  console.log(filteredData.value)
+})
+
+function cbForFiltering(item) {
+  const filteringValue = DateTime.fromISO(valueForFiltering.value)
+  const filterProp = filterBy.value.filterByProperty
+  console.log(filterProp)
+  console.log(item[filterProp])
+
+  const itemTime =
+    filterProp !== 'date'
+      ? DateTime.fromISO(item[filterProp])
+      : DateTime.fromFormat(item[filterProp], 'yyyy.MM.dd HH:mm')
+
+  console.log(itemTime)
+
+  let valueToFilterWith
+  let valueOfTheItem
+
+  if (filterBy.value.filterByTimePeriod === 'day') {
+    valueToFilterWith = filteringValue.toFormat('yyyy-MM-dd')
+    valueOfTheItem = itemTime.toFormat('yyyy-MM-dd')
+  } else if (filterBy.value.filterByTimePeriod === 'month') {
+    valueToFilterWith = filteringValue.toFormat('yyyy-MM')
+    valueOfTheItem = itemTime.toFormat('yyyy-MM')
+  } else {
+    valueToFilterWith = filteringValue.toFormat('yyyy WW')
+    valueOfTheItem = itemTime.toFormat('yyyy WW')
+  }
+
+  console.log(valueToFilterWith.toString())
+  console.log(valueOfTheItem.toString() === valueToFilterWith.toString())
+
+  if (valueToFilterWith.toString() === valueOfTheItem.toString()) {
+    return true
+  } else {
+    return false
+  }
+}
 </script>
 
 <template>
@@ -97,8 +158,15 @@ watch(isEditing, (newValue) => {
       <h2 class="font-bold text-bg-olive text-4xl">Worktime posts</h2>
     </header>
 
+    <FilteringOptions
+      :filteringOn="() => (isFiltered = true)"
+      :filteringOff="() => (isFiltered = false)"
+      :setFilteringOptions="setFilteringOptions"
+    />
+
     <main class="flex p-8 lg:grid lg:grid-cols-2 lg:grid-rows-2 flex-col gap-8">
       <WorkCards
+        v-if="!isFiltered"
         v-for="data in datas"
         :card="data"
         :key="data.id"
@@ -106,7 +174,21 @@ watch(isEditing, (newValue) => {
         :enableEditing="
           () => {
             isEditing = true
-            isAddingOrEditing = true
+            isAddingOrEditin = true
+            currentCard.value = data
+          }
+        "
+      />
+      <WorkCards
+        v-else="isFiltered"
+        v-for="filter in filteredData"
+        :card="filter"
+        :key="filter.id"
+        :removeItem="removeItem"
+        :enableEditing="
+          () => {
+            isEditing = true
+            isAddingOrEditin = true
             currentCard.value = data
           }
         "
