@@ -1,22 +1,36 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import WorkCards from './components/WorkCards.vue'
 import PopUpWraepper from './components/PopUpWraepper.vue'
 import { PlusCircleIcon } from '@heroicons/vue/24/solid'
 import AddEditCard from './components/AddEditCard.vue'
 
-const datas = ref([
-  { id: 0, title: 'ss', desc: 'ss', date: '', starting: '', ending: '', categories: 'project' },
-  { id: 1, title: 'ss2', desc: 'ss2', date: '', starting: '', ending: '', categories: 'client' },
-])
+const datas = ref([])
+const lastId = ref(0)
 
 const isAddingOrEditing = ref(false)
+
+onMounted(() => {
+  let localContent
+  try {
+    localContent = JSON.parse(localStorage.getItem('cards'))
+    lastId.value = localContent[localContent.length - 1].id
+  } catch (err) {
+    console.log(err)
+    localContent = []
+  }
+
+  if (localContent.length !== 0 && datas.value.length === 0) {
+    datas.value = localContent
+  }
+  setLocalStorage()
+})
 
 function addItem(cardValues) {
   datas.value = [
     ...datas.value,
     {
-      id: 2, //change it later to somehting dynamically increasing
+      id: ++lastId.value,
       title: cardValues.title,
       desc: cardValues.desc,
       date: cardValues.date,
@@ -26,6 +40,20 @@ function addItem(cardValues) {
     },
   ]
 }
+
+function removeItem(currentItem) {
+  datas.value = datas.value.filter((item) => item !== currentItem)
+}
+
+function setLocalStorage() {
+  if (datas.length === 0) {
+    localStorage.removeItem('cards')
+  } else {
+    localStorage.setItem('cards', JSON.stringify(datas.value))
+  }
+}
+
+watch(datas, setLocalStorage)
 </script>
 
 <template>
@@ -35,7 +63,7 @@ function addItem(cardValues) {
     </header>
 
     <main class="flex p-8 lg:grid lg:grid-cols-2 lg:grid-rows-2 flex-col gap-8">
-      <WorkCards v-for="data in datas" :card="data" :key="data.id" />
+      <WorkCards v-for="data in datas" :card="data" :key="data.id" :removeItem="removeItem" />
     </main>
 
     <div class="sticky bottom-10 flex flex-col justify-center items-center">

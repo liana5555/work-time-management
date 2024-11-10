@@ -30,7 +30,7 @@ const newData = ref({
     </div>
     <div class="flex flex-col">
       <label>Ending Date</label>
-      <input v-model="newData.starting" type="datetime-local" />
+      <input v-model="newData.ending" type="datetime-local" />
     </div>
     <div>
       <h3>Category</h3>
