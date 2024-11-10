@@ -25,22 +25,44 @@ const inputClasses = `p-2 border-2 border-bg-lghter
 </script>
 
 <template>
-  <div class="bg-light-green flex flex-col gap-8 sm:min-w-96 p-4 rounded-xl">
+  <form
+    @submit.prevent="onSubmit"
+    class="bg-light-green flex flex-col gap-8 sm:min-w-96 p-4 rounded-xl"
+  >
     <div class="flex flex-col">
       <label>Title</label>
-      <input :class="inputClasses" v-model="newData.title" />
+      <input :class="inputClasses" v-model="newData.title" required name="title" />
     </div>
     <div class="flex flex-col">
       <label>Description</label>
-      <textarea :class="inputClasses" type="text" v-model="newData.desc"></textarea>
+      <textarea
+        :class="inputClasses"
+        type="text"
+        v-model="newData.desc"
+        name="desc"
+        required
+      ></textarea>
     </div>
     <div class="flex flex-col">
       <label>Starting Date</label>
-      <input :class="inputClasses" v-model="newData.starting" type="datetime-local" />
+      <input
+        :class="inputClasses"
+        v-model="newData.starting"
+        type="datetime-local"
+        name="starting"
+        required
+      />
     </div>
     <div class="flex flex-col">
       <label>Ending Date</label>
-      <input :class="inputClasses" v-model="newData.ending" type="datetime-local" />
+      <input
+        :class="inputClasses"
+        v-model="newData.ending"
+        :min="newData.starting"
+        type="datetime-local"
+        name="ending"
+        required
+      />
     </div>
     <div>
       <h3>Category</h3>
@@ -57,22 +79,32 @@ const inputClasses = `p-2 border-2 border-bg-lghter
     </div>
     <div class="flex flex-row gap-4 justify-evenly items-center">
       <button
+        type="submit"
         class="border-bg-olive border-4 p-4 rounded-xl bg-accept-bg w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-accept-bg/75 transition-all ease-in-out duration-300"
         @click="
           () => {
-            try {
-              if (isEditing) {
-                editCard(newData)
-                swalNotif('success', 'You successfully edited the current item')
-              } else {
-                newData.date = DateTime.now().toFormat('yyyy.MM.dd HH:mm')
-                addItem(newData)
-                swalNotif('success', 'You successfully added a new item')
-              }
-            } catch (err) {
+            if (!newData.starting || !newData.ending || !newData.title || !newData.categories) {
               swalNotif('error', 'Oops, something went wrong.')
+            } else if (
+              DateTime.fromISO(newData.starting).toMillis() >
+              DateTime.fromISO(newData.ending).toMillis()
+            ) {
+              swalNotif('error', 'Oops, something went wrong.')
+            } else {
+              try {
+                if (isEditing) {
+                  editCard(newData)
+                  swalNotif('success', 'You successfully edited the current item')
+                } else {
+                  newData.date = DateTime.now().toFormat('yyyy.MM.dd HH:mm')
+                  addItem(newData)
+                  swalNotif('success', 'You successfully added a new item')
+                }
+              } catch (err) {
+                swalNotif('error', 'Oops, something went wrong.')
+              }
+              cancelDialog()
             }
-            cancelDialog()
           }
         "
       >
@@ -80,10 +112,10 @@ const inputClasses = `p-2 border-2 border-bg-lghter
       </button>
       <button
         class="border-bg-olive border-4 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-darker-blue/75 transition-all ease-in-out duration-300"
-        @click="props.cancelDialog"
+        @click="props.cancelDialog()"
       >
         Cancel
       </button>
     </div>
-  </div>
+  </form>
 </template>
