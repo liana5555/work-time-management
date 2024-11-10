@@ -115,7 +115,6 @@ watch(valueForFiltering, (newValueForFiltering) => {
 })
 
 watch([datas, filteredData], ([newData, newFilteredData]) => {
-  console.log(newData, newFilteredData)
   let dataToReduceOn
   if (!isFiltered) {
     dataToReduceOn = newData
@@ -123,15 +122,12 @@ watch([datas, filteredData], ([newData, newFilteredData]) => {
     dataToReduceOn = newFilteredData
   }
 
-  console.log(dataToReduceOn)
-
   const valueArray = dataToReduceOn.map((item) => {
     return DateTime.fromISO(item.ending)
       .diff(DateTime.fromISO(item.starting), ['minutes'])
       .toObject()
   })
 
-  console.log(valueArray)
   let sum = 0
   for (let i = 0; i < valueArray.length; i++) {
     sum += valueArray[i].minutes
