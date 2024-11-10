@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue'
 import WorkCards from './components/WorkCards.vue'
 import PopUpWraepper from './components/PopUpWraepper.vue'
-import { PlusCircleIcon } from '@heroicons/vue/24/solid'
+import { ArrowDownCircleIcon, ArrowUpCircleIcon, PlusCircleIcon } from '@heroicons/vue/24/solid'
 import AddEditCard from './components/AddEditCard.vue'
 import FilteringOptions from './components/FilteringOptions.vue'
 import { DateTime } from 'luxon'
@@ -20,6 +20,7 @@ const filterBy = ref({
   filterByProperty: '',
 })
 const valueForFiltering = ref('')
+const showFilteringOptions = ref(false)
 
 const currentCard = ref({
   id: 0,
@@ -85,7 +86,6 @@ function setLocalStorage() {
 }
 
 function setFilteringOptions(filteringValue, filteringBy) {
-  console.log(filteringValue, filteringBy)
   valueForFiltering.value = filteringValue
 
   filterBy.value = filteringBy
@@ -111,21 +111,16 @@ watch(valueForFiltering, (newValueForFiltering) => {
   if (newValueForFiltering && isFiltered) {
     filteredData.value = datas.value.filter(cbForFiltering)
   }
-  console.log(filteredData.value)
 })
 
 function cbForFiltering(item) {
   const filteringValue = DateTime.fromISO(valueForFiltering.value)
   const filterProp = filterBy.value.filterByProperty
-  console.log(filterProp)
-  console.log(item[filterProp])
 
   const itemTime =
     filterProp !== 'date'
       ? DateTime.fromISO(item[filterProp])
       : DateTime.fromFormat(item[filterProp], 'yyyy.MM.dd HH:mm')
-
-  console.log(itemTime)
 
   let valueToFilterWith
   let valueOfTheItem
@@ -141,9 +136,6 @@ function cbForFiltering(item) {
     valueOfTheItem = itemTime.toFormat('yyyy WW')
   }
 
-  console.log(valueToFilterWith.toString())
-  console.log(valueOfTheItem.toString() === valueToFilterWith.toString())
-
   if (valueToFilterWith.toString() === valueOfTheItem.toString()) {
     return true
   } else {
@@ -153,18 +145,28 @@ function cbForFiltering(item) {
 </script>
 
 <template>
-  <div class="flex flex-col p-8 bg-white h-full w-full">
-    <header class="flex flex-row w-full justify-center items-center m-8">
-      <h2 class="font-bold text-bg-olive text-4xl">Worktime posts</h2>
+  <div class="flex flex-col p-4 bg-white h-full w-full items-center">
+    <header class="flex flex-row w-full justify-center items-center mt-8 mb-8">
+      <h2 class="font-bold text-bg-lghter text-4xl">Worktime posts</h2>
     </header>
+    <div class="flex flex-col justify-center items-center gap-8 p-8 rounded-xl w-full sm:w-fit">
+      <div class="flex flex-row justify-center items-center gap-4 text-bg-olive">
+        <h3 class="font-bold text-xl">Filtering options</h3>
+        <ArrowDownCircleIcon
+          :class="`size-10 ${!showFilteringOptions ? 'rotate-0' : 'rotate-180'} transition-all ease-in-out duration-300 hover:cursor-pointer hover:scale-125`"
+          @click="() => (showFilteringOptions = !showFilteringOptions)"
+        />
+      </div>
 
-    <FilteringOptions
-      :filteringOn="() => (isFiltered = true)"
-      :filteringOff="() => (isFiltered = false)"
-      :setFilteringOptions="setFilteringOptions"
-    />
+      <FilteringOptions
+        v-if="showFilteringOptions"
+        :filteringOn="() => (isFiltered = true)"
+        :filteringOff="() => (isFiltered = false)"
+        :setFilteringOptions="setFilteringOptions"
+      />
+    </div>
 
-    <main class="flex p-8 lg:grid lg:grid-cols-2 lg:grid-rows-2 flex-col gap-8">
+    <main class="flex p-4 lg:grid lg:grid-cols-3 lg:grid-rows-2 flex-col gap-8 w-full">
       <WorkCards
         v-if="!isFiltered"
         v-for="data in datas"
@@ -174,7 +176,7 @@ function cbForFiltering(item) {
         :enableEditing="
           () => {
             isEditing = true
-            isAddingOrEditin = true
+            isAddingOrEditing = true
             currentCard.value = data
           }
         "
@@ -188,8 +190,8 @@ function cbForFiltering(item) {
         :enableEditing="
           () => {
             isEditing = true
-            isAddingOrEditin = true
-            currentCard.value = data
+            isAddingOrEditing = true
+            currentCard.value = filter
           }
         "
       />

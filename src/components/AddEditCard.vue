@@ -16,25 +16,31 @@ const newData = ref({
 })
 
 newData.value = props.card?.value || newData.value
+
+const inputClasses = `p-2 border-2 border-bg-lghter
+  rounded-xl focus:border-none 
+  transition-all
+  focus:outline-none focus:ring 
+  focus:ring-bg-olive required:ring-red-500`
 </script>
 
 <template>
   <div class="bg-light-green flex flex-col gap-8 sm:min-w-96 p-4 rounded-xl">
     <div class="flex flex-col">
       <label>Title</label>
-      <input v-model="newData.title" />
+      <input :class="inputClasses" v-model="newData.title" />
     </div>
     <div class="flex flex-col">
       <label>Description</label>
-      <textarea type="text" v-model="newData.desc"></textarea>
+      <textarea :class="inputClasses" type="text" v-model="newData.desc"></textarea>
     </div>
     <div class="flex flex-col">
       <label>Starting Date</label>
-      <input v-model="newData.starting" type="datetime-local" />
+      <input :class="inputClasses" v-model="newData.starting" type="datetime-local" />
     </div>
     <div class="flex flex-col">
       <label>Ending Date</label>
-      <input v-model="newData.ending" type="datetime-local" />
+      <input :class="inputClasses" v-model="newData.ending" type="datetime-local" />
     </div>
     <div>
       <h3>Category</h3>

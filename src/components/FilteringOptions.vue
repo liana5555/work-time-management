@@ -11,10 +11,9 @@ const valueForFiltering = ref('')
 </script>
 
 <template>
-  <form @submit.prevent="onSubmit" class="flex flex-col items-center justify-center">
-    <h2>Filtering options</h2>
-    <div class="flex flex-row gap-4">
-      <div>
+  <form @submit.prevent="onSubmit" class="flex flex-col items-center justify-center gap-4">
+    <div class="flex flex-row gap-8">
+      <div class="flex flex-row gap-2">
         <label for="day">Created at</label>
         <input
           type="radio"
@@ -25,7 +24,7 @@ const valueForFiltering = ref('')
           required
         />
       </div>
-      <div>
+      <div class="flex flex-row gap-2">
         <label for="week">Starting date</label>
         <input
           type="radio"
@@ -36,7 +35,7 @@ const valueForFiltering = ref('')
           required
         />
       </div>
-      <div>
+      <div class="flex flex-row gap-2">
         <label for="month">Ending date</label>
         <input
           type="radio"
@@ -48,8 +47,8 @@ const valueForFiltering = ref('')
         />
       </div>
     </div>
-    <div class="flex flex-row gap-4">
-      <div>
+    <div class="flex flex-row gap-8">
+      <div class="flex flex-row gap-2">
         <label for="day">Day</label>
         <input
           type="radio"
@@ -60,7 +59,7 @@ const valueForFiltering = ref('')
           required
         />
       </div>
-      <div>
+      <div class="flex flex-row gap-2">
         <label for="week">Week</label>
         <input
           type="radio"
@@ -71,7 +70,7 @@ const valueForFiltering = ref('')
           required
         />
       </div>
-      <div>
+      <div class="flex flex-row gap-2">
         <label for="month">Month</label>
         <input
           type="radio"
@@ -99,7 +98,7 @@ const valueForFiltering = ref('')
     </div>
     <div class="flex flex-row gap-4">
       <button
-        class="border-bg-olive border-4 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer"
+        class="border-bg-olive border-2 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-darker-blue/75 transition-all ease-in-out duration-300"
         @click="
           () => {
             setFilteringOptions(valueForFiltering, filterBy)
@@ -110,10 +109,11 @@ const valueForFiltering = ref('')
         Filter
       </button>
       <button
-        class="border-bg-olive border-4 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer"
+        type="reset"
+        class="border-bg-olive border-2 p-4 rounded-xl bg-darker-blue w-32 hover:cursor-pointer hover:shadow-2xl hover:bg-darker-blue/75 transition-all ease-in-out duration-300"
         @click="filteringOff"
       >
-        Nonfiltered
+        Show All
       </button>
     </div>
   </form>
