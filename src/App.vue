@@ -116,7 +116,7 @@ watch(valueForFiltering, (newValueForFiltering) => {
 
 watch([datas, filteredData], ([newData, newFilteredData]) => {
   let dataToReduceOn
-  if (!isFiltered) {
+  if (!isFiltered.value) {
     dataToReduceOn = newData
   } else {
     dataToReduceOn = newFilteredData
