@@ -192,7 +192,7 @@ function cbForFiltering(item) {
         :setFilteringOptions="setFilteringOptions"
       />
     </div>
-    <div class="text-darker-blue p-2">
+    <div class="text-darker-blue p-2 text-center">
       Working time based on {{ isFiltered ? 'filtering' : 'all data' }}:
       {{
         Duration.fromObject({ minutes: workedTime })
